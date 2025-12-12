@@ -1,0 +1,44 @@
+{
+  "name": "passkey-nft-vault",
+  "version": "1.0.0",
+  "description": "SIP-009 NFT with Clarity 4 passkey authentication - Stacks Builder Challenge Week 1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "clarinet test",
+    "check": "clarinet check",
+    "deploy:testnet": "clarinet deployments apply -p testnet"
+  },
+  "dependencies": {
+    "@stacks/connect": "^7.8.0",
+    "@stacks/network": "^6.13.0",
+    "@stacks/transactions": "^6.13.0",
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "stacks",
+    "clarity",
+    "clarity-4",
+    "nft",
+    "passkey",
+    "webauthn",
+    "secp256r1",
+    "bitcoin"
+  ],
+  "author": "Chidera",
+  "license": "MIT"
+}
