@@ -1,0 +1,25 @@
+[network]
+name = "devnet"
+stacks_node_rpc_address = "http://localhost:20443"
+deployment_fee_rate = 10
+
+[accounts.deployer]
+mnemonic = "twice particular affair smile gesture secret elite hint cabin echo strike civil speak"
+balance = 100_000_000_000_000
+
+[accounts.wallet_1]
+mnemonic = "sell invite acquire kitten bamboo drastic jelly vivid peace spawn twice guilt pave pen trash pretty park cube fragile unaware remain midnight betray rebuild"
+balance = 100_000_000_000_000
+
+[accounts.wallet_2]
+mnemonic = "hold excess usual excess ring elephant install account animal isolate bunker session"
+balance = 100_000_000_000_000
+
+[accounts.wallet_3]
+mnemonic = "cicada trap resource genre zoo length champion cricket mouse shy repair guitar"
+balance = 100_000_000_000_000
+
+[devnet]
+disable_stacks_explorer = false
+disable_stacks_api = false
+stacks_node_events_observers = ["host.docker.internal:20445"]

@@ -1,0 +1,21 @@
+[project]
+name = "passkey-nft-vault"
+description = "SIP-009 NFT with Clarity 4 passkey authentication using secp256r1"
+authors = ["Chidera"]
+telemetry = false
+
+# Boot contracts required for deployment
+[[project.requirements]]
+contract_id = "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait"
+
+[contracts.passkey-nft]
+path = "contracts/passkey-nft.clar"
+clarity_version = 4
+
+[contracts.passkey-nft-simple]
+path = "contracts/passkey-nft-simple.clar"
+clarity_version = 4
+
+[repl]
+costs_version = 4
+parser_version = 4
