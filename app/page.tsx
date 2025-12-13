@@ -15,12 +15,14 @@ import {
 } from '@stacks/transactions';
 import { StacksTestnet, StacksMainnet } from '@stacks/network';
 
-// Contract configuration - UPDATE THESE AFTER DEPLOYMENT
-const CONTRACT_ADDRESS = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'; // Update after deploy
-const CONTRACT_NAME = 'passkey-nft';
+// Contract configuration - set via environment variables
+const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
+const CONTRACT_NAME = process.env.NEXT_PUBLIC_CONTRACT_NAME || 'passkey-nft';
 
-// Network configuration
-const network = new StacksTestnet();
+// Network configuration - defaults to testnet
+const NETWORK_ENV = process.env.NEXT_PUBLIC_NETWORK || 'testnet';
+const network = NETWORK_ENV === 'mainnet' ? new StacksMainnet() : new StacksTestnet();
+const isMainnet = NETWORK_ENV === 'mainnet';
 
 // App configuration for Stacks Connect
 const appConfig = new AppConfig(['store_write', 'publish_data']);
@@ -50,7 +52,7 @@ export default function Home() {
     if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
       setIsConnected(true);
-      setUserAddress(userData.profile.stxAddress.testnet);
+      setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
     }
   }, []);
 
@@ -68,7 +70,7 @@ export default function Home() {
       onFinish: () => {
         const userData = userSession.loadUserData();
         setIsConnected(true);
-        setUserAddress(userData.profile.stxAddress.testnet);
+        setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
         setStatus('idle');
         setStatusMessage('');
       },
@@ -480,7 +482,7 @@ export default function Home() {
                   <p className="text-center text-3xl font-bold mb-4">#{tokenId}</p>
                   {txId && (
                     <a
-                      href={`https://explorer.stacks.co/txid/${txId}?chain=testnet`}
+                      href={`https://explorer.stacks.co/txid/${txId}${isMainnet ? '' : '?chain=testnet'}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block text-center text-sm text-stacks hover:underline"
