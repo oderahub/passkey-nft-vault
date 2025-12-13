@@ -4,7 +4,7 @@ stacks_node_rpc_address = "http://localhost:20443"
 deployment_fee_rate = 10
 
 [accounts.deployer]
-mnemonic = "twice particular affair smile gesture secret elite hint cabin echo strike civil speak"
+mnemonic = "female autumn drive capable scorpion congress hockey chunk mouse cherry blame trumpet"
 balance = 100_000_000_000_000
 
 [accounts.wallet_1]
