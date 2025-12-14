@@ -1,11 +1,12 @@
 # Passkey NFT Vault 🔐
 
-> **Stacks Builder Challenge Week 1 Submission**  
+> **Stacks Builder Challenge Week 1 Submission**
 > Mint NFTs with Face ID/Touch ID using Clarity 4's native secp256r1 signature verification
 
 [![Clarity Version](https://img.shields.io/badge/Clarity-4.0-purple)](https://stacks.co)
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 [![Built on Stacks](https://img.shields.io/badge/Built%20on-Stacks-orange)](https://stacks.co)
+[![Live on Mainnet](https://img.shields.io/badge/Live%20on-Mainnet-success)](https://explorer.hiro.so/txid/89a90f99cec86be93d718779884da95192ba21437dbf95f21b9e312dacefd718?chain=mainnet)
 
 ## 🎯 Overview
 
@@ -16,8 +17,8 @@ Passkey NFT Vault is a **SIP-009 compliant NFT contract** that leverages **Clari
 | Feature | Function | Purpose |
 |---------|----------|---------|
 | **secp256r1-verify** | `(secp256r1-verify message-hash signature public-key)` | Native P-256 signature verification for WebAuthn/passkey support |
-| **restrict-assets?** | `(restrict-assets? owner allowances body)` | Asset protection to prevent unauthorized token movement |
-| **to-ascii?** | `(to-ascii? value)` | String conversion for dynamic token URI generation |
+| **int-to-ascii** | `(int-to-ascii value)` | Integer to string conversion for dynamic token URI generation |
+| **Clarity 4 Epoch** | Version 4 features | Enabled via epoch 3.3 configuration |
 
 ## 🏗️ Architecture
 
@@ -40,11 +41,11 @@ Passkey NFT Vault is a **SIP-009 compliant NFT contract** that leverages **Clari
 ┌──────────────────────────────────────────────────────────────┐
 │                    Stacks Blockchain                          │
 │  ┌─────────────────────────────────────────────────────────┐ │
-│  │  passkey-nft.clar (Clarity 4)                           │ │
+│  │  passkey-nft-v3.clar (Clarity 4)                        │ │
+│  │  SP2FY55DK4NESNH6E5CJSNZP2CQ5PZ5BX64B29FYG              │ │
 │  │                                                          │ │
 │  │  • secp256r1-verify → Validates P-256 signature         │ │
-│  │  • restrict-assets? → Protects asset transfers          │ │
-│  │  • to-ascii? → Generates dynamic token URIs             │ │
+│  │  • int-to-ascii → Generates dynamic token URIs          │ │
 │  │  • nft-mint? → Mints SIP-009 compliant NFT             │ │
 │  └─────────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────┘
@@ -62,34 +63,44 @@ Passkey NFT Vault is a **SIP-009 compliant NFT contract** that leverages **Clari
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/passkey-nft-vault.git
+git clone https://github.com/oderahub/passkey-nft-vault.git
 cd passkey-nft-vault
 
 # Install dependencies
 npm install
 
-# Run Clarinet tests
-clarinet test
+# Configure environment (copy and edit)
+cp .env.example .env.local
+# Update NEXT_PUBLIC_NETWORK (mainnet/testnet)
+# Update NEXT_PUBLIC_CONTRACT_ADDRESS with your deployed contract
+
+# Run tests
+npm test
 
 # Start the development server
 npm run dev
 ```
 
+### Mainnet Deployment
+
+The contract is **live on Stacks Mainnet**:
+
+- **Contract**: `SP2FY55DK4NESNH6E5CJSNZP2CQ5PZ5BX64B29FYG.passkey-nft-v3`
+- **TX ID**: `89a90f99cec86be93d718779884da95192ba21437dbf95f21b9e312dacefd718`
+- **Explorer**: [View on Stacks Explorer](https://explorer.hiro.so/txid/89a90f99cec86be93d718779884da95192ba21437dbf95f21b9e312dacefd718?chain=mainnet)
+
 ### Deploy to Testnet
 
 1. Get testnet STX from the [Stacks Faucet](https://explorer.stacks.co/sandbox/faucet?chain=testnet)
 
-2. Set your deployer mnemonic:
-```bash
-export DEPLOYER_MNEMONIC="your twelve word mnemonic phrase here"
-```
+2. Configure your deployment in `settings/Testnet.toml`
 
 3. Deploy:
 ```bash
-clarinet deployments apply -p testnet
+clarinet deployments apply --testnet
 ```
 
-4. Update `CONTRACT_ADDRESS` in `app/page.tsx` with your deployed address
+4. Update `.env.local` with your deployed contract address
 
 ## 📜 Smart Contract
 
@@ -193,19 +204,23 @@ clarinet check
 ```
 passkey-nft-vault/
 ├── contracts/
-│   └── passkey-nft.clar       # Main Clarity 4 contract
+│   └── passkey-nft-v3.clar    # Main Clarity 4 contract (v3)
 ├── tests/
-│   └── passkey-nft_test.ts    # Clarinet test suite
+│   └── passkey-nft.test.ts    # Vitest test suite
 ├── app/
 │   ├── page.tsx               # Main UI with WebAuthn
 │   ├── layout.tsx             # Next.js layout
 │   ├── globals.css            # Tailwind styles
 │   └── api/metadata/[tokenId]/
 │       └── route.ts           # NFT metadata API
+├── deployments/
+│   └── default.mainnet-plan.yaml  # Mainnet deployment config
 ├── Clarinet.toml              # Clarinet configuration
 ├── settings/
 │   ├── Devnet.toml            # Local development
-│   └── Testnet.toml           # Testnet deployment
+│   ├── Testnet.toml           # Testnet deployment
+│   └── Mainnet.toml           # Mainnet deployment (not in git)
+├── vitest.config.js           # Test configuration
 └── package.json
 ```
 
@@ -218,10 +233,12 @@ Each NFT includes:
 
 ## 🛣️ Roadmap
 
-- [ ] Week 1: Core contract + passkey minting ✅
+- [x] Week 1: Core contract + passkey minting ✅
+- [x] Mainnet deployment ✅
+- [x] Vitest testing infrastructure ✅
 - [ ] Week 2: Multi-sig passkey support
 - [ ] Week 3: Time-locked minting with `stacks-block-time`
-- [ ] Mainnet deployment
+- [ ] NFT marketplace integration
 
 ## 📚 Resources
 
