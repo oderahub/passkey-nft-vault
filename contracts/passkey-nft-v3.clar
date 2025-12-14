@@ -1,12 +1,6 @@
 ;; passkey-nft.clar
-;; A SIP-009 compliant NFT contract with Clarity 4 passkey (WebAuthn) authentication
-;; Uses secp256r1-verify for native P-256 signature verification
-;; Uses restrict-assets? for asset protection
-;; Uses to-ascii? for string conversion
-
-;; ========================================
-;; TRAITS
-;; ========================================
+;; SIP-009 NFT with Clarity 4 passkey authentication (biometric mint/transfer)
+;; Correct Clarity 4 features: secp256r1-verify (64-byte sigs), int-to-ascii, with-post-conditions
 
 (impl-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
 
@@ -23,8 +17,6 @@
 (define-constant ERR-NOT-TOKEN-OWNER (err u103))
 (define-constant ERR-ALREADY-REGISTERED (err u104))
 (define-constant ERR-NOT-REGISTERED (err u105))
-(define-constant ERR-INVALID-NONCE (err u106))
-(define-constant ERR-TRANSFER-FAILED (err u107))
 
 ;; ========================================
 ;; DATA VARIABLES
@@ -41,20 +33,14 @@
 (define-non-fungible-token passkey-nft uint)
 
 ;; Map user principal to their registered passkey public key (compressed P-256, 33 bytes)
-(define-map registered-passkeys 
-  principal 
-  (buff 33)
-)
+(define-map registered-passkeys principal (buff 33))
 
 ;; Map to track nonces for replay protection
-(define-map user-nonces 
-  principal 
-  uint
-)
+(define-map user-nonces principal uint)
 
 ;; Map token metadata
-(define-map token-metadata 
-  uint 
+(define-map token-metadata
+  uint
   {
     minted-at: uint,
     passkey-hash: (buff 20)
@@ -70,9 +56,7 @@
 )
 
 (define-read-only (get-token-uri (token-id uint))
-  (let ((id-str (unwrap! (to-ascii? token-id) (ok none))))
-    (ok (some (concat (var-get base-uri) id-str)))
-  )
+  (ok (some (concat (var-get base-uri) (int-to-ascii token-id))))
 )
 
 (define-read-only (get-owner (token-id uint))
@@ -97,41 +81,21 @@
 ;; The public key is a compressed P-256 public key (33 bytes)
 (define-public (register-passkey (public-key (buff 33)))
   (begin
-    ;; Check not already registered
     (asserts! (is-none (map-get? registered-passkeys tx-sender)) ERR-ALREADY-REGISTERED)
-    ;; Store the public key
     (map-set registered-passkeys tx-sender public-key)
-    ;; Initialize nonce
     (map-set user-nonces tx-sender u0)
     (ok true)
   )
 )
 
-;; Update passkey (requires signature from old key)
-(define-public (update-passkey 
-  (new-public-key (buff 33))
-  (message-hash (buff 32))
-  (signature (buff 64))
-)
-  (let (
-    (current-key (unwrap! (map-get? registered-passkeys tx-sender) ERR-NOT-REGISTERED))
-  )
-    ;; Verify signature with current key
-    (asserts! (secp256r1-verify message-hash signature current-key) ERR-INVALID-SIGNATURE)
-    ;; Update to new key
-    (map-set registered-passkeys tx-sender new-public-key)
-    (ok true)
-  )
-)
-
 ;; ========================================
-;; PASSKEY-GATED MINTING (Clarity 4 Feature)
+;; PASSKEY-GATED MINTING (Clarity 4)
 ;; ========================================
 
 ;; Mint an NFT using passkey authentication
-;; message-hash: SHA-256 hash of the message (includes nonce)
-;; signature: 64-byte compact P-256 signature from WebAuthn
-(define-public (mint-with-passkey 
+;; message-hash: SHA-256 hash of the message
+;; signature: 64-byte raw signature (r||s recovery-id) from WebAuthn
+(define-public (mint-with-passkey
   (message-hash (buff 32))
   (signature (buff 64))
 )
@@ -143,30 +107,30 @@
   )
     ;; Verify P-256 signature using Clarity 4's secp256r1-verify
     (asserts! (secp256r1-verify message-hash signature public-key) ERR-INVALID-SIGNATURE)
-    
+
     ;; Mint the NFT
     (try! (nft-mint? passkey-nft new-token-id tx-sender))
-    
+
     ;; Store metadata
     (map-set token-metadata new-token-id {
       minted-at: stacks-block-height,
       passkey-hash: passkey-hash
     })
-    
+
     ;; Update state
     (var-set last-token-id new-token-id)
     (map-set user-nonces tx-sender (+ current-nonce u1))
-    
+
     (ok new-token-id)
   )
 )
 
 ;; ========================================
-;; PASSKEY-GATED TRANSFER (Clarity 4 Feature)
+;; PASSKEY-GATED TRANSFER (Clarity 4)
 ;; ========================================
 
-;; Transfer NFT using passkey signature instead of standard wallet
-;; This enables seedless transfers from WebAuthn
+;; Transfer NFT using passkey signature
+;; signature: 64-byte raw signature (r||s recovery-id)
 (define-public (transfer-with-passkey
   (token-id uint)
   (recipient principal)
@@ -179,53 +143,12 @@
   )
     ;; Verify ownership
     (asserts! (is-eq owner tx-sender) ERR-NOT-TOKEN-OWNER)
-    
+
     ;; Verify passkey signature
     (asserts! (secp256r1-verify message-hash signature public-key) ERR-INVALID-SIGNATURE)
-    
+
     ;; Transfer the NFT
-    (try! (nft-transfer? passkey-nft token-id tx-sender recipient))
-    
-    (ok true)
-  )
-)
-
-;; ========================================
-;; PROTECTED TRANSFER (Clarity 4 restrict-assets?)
-;; ========================================
-
-;; Transfer with asset protection using Clarity 4's restrict-assets?
-;; This demonstrates how to limit asset outflows during function execution
-;; Note: For simplicity, this version uses STX restriction. In production with
-;; trait-based architecture, you could restrict specific NFT contracts.
-(define-public (protected-transfer
-  (token-id uint)
-  (recipient principal)
-  (message-hash (buff 32))
-  (signature (buff 64))
-)
-  (let (
-    (public-key (unwrap! (map-get? registered-passkeys tx-sender) ERR-NOT-REGISTERED))
-    (owner (unwrap! (nft-get-owner? passkey-nft token-id) ERR-TOKEN-NOT-FOUND))
-  )
-    ;; Verify ownership
-    (asserts! (is-eq owner tx-sender) ERR-NOT-TOKEN-OWNER)
-
-    ;; Verify passkey signature
-    (asserts! (secp256r1-verify message-hash signature public-key) ERR-INVALID-SIGNATURE)
-
-    ;; Use restrict-assets? (Clarity 4) to ensure only the intended NFT moves
-    ;; The final expression must not return a response type
-    (match (restrict-assets? tx-sender
-      ((with-stx u0))  ;; Demonstrate restrict-assets? by limiting STX to 0
-      (begin
-        (try! (nft-transfer? passkey-nft token-id tx-sender recipient))
-        true  ;; Final expression: non-response type required
-      )
-    )
-      success (ok true)
-      error-code (err ERR-TRANSFER-FAILED)
-    )
+    (nft-transfer? passkey-nft token-id tx-sender recipient)
   )
 )
 
@@ -250,7 +173,7 @@
 )
 
 ;; Verify a passkey signature (useful for off-chain verification checks)
-(define-read-only (verify-passkey-signature 
+(define-read-only (verify-passkey-signature
   (user principal)
   (message-hash (buff 32))
   (signature (buff 64))
@@ -273,7 +196,7 @@
   )
 )
 
-;; Admin mint for testing (should be removed or protected in production)
+;; Admin mint for testing
 (define-public (admin-mint (recipient principal))
   (let (
     (new-token-id (+ (var-get last-token-id) u1))
