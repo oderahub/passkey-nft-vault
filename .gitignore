@@ -14,7 +14,10 @@ coverage/
 
 # Clarinet
 .clarinet/
+.cache/
 *.lock
+settings/Mainnet.toml
+settings/Simnet.toml
 
 # Environment
 .env
