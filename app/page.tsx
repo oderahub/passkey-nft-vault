@@ -257,11 +257,11 @@ export default function Home() {
     };
   }, [passkey]);
 
-  // Convert DER signature to compact format (64 bytes: r || s)
+  // Convert DER signature to raw format (64 bytes: r || s)
   function derToCompact(der: Uint8Array): Uint8Array {
     // DER format: 0x30 [total-length] 0x02 [r-length] [r] 0x02 [s-length] [s]
     let offset = 2; // Skip 0x30 and length byte
-    
+
     // Read r
     if (der[offset] !== 0x02) throw new Error('Invalid DER signature');
     offset++;
@@ -269,23 +269,23 @@ export default function Home() {
     offset++;
     let r = der.slice(offset, offset + rLength);
     offset += rLength;
-    
+
     // Read s
     if (der[offset] !== 0x02) throw new Error('Invalid DER signature');
     offset++;
     const sLength = der[offset];
     offset++;
     let s = der.slice(offset, offset + sLength);
-    
+
     // Remove leading zeros and pad to 32 bytes each
     r = padTo32Bytes(r);
     s = padTo32Bytes(s);
-    
-    // Concatenate r and s
+
+    // Concatenate r || s = 64 bytes (no recovery byte needed for secp256r1)
     const compact = new Uint8Array(64);
     compact.set(r, 0);
     compact.set(s, 32);
-    
+
     return compact;
   }
 
