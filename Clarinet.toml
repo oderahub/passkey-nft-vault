@@ -8,12 +8,7 @@ telemetry = false
 [[project.requirements]]
 contract_id = "SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait"
 
-[contracts.passkey-nft]
-path = "contracts/passkey-nft.clar"
-clarity_version = 4
-epoch = "3.3"
-
-[contracts.passkey-nft-simple]
-path = "contracts/passkey-nft-simple.clar"
+[contracts.passkey-nft-v3]
+path = "contracts/passkey-nft-v3.clar"
 clarity_version = 4
 epoch = "3.3"
