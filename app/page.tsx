@@ -224,7 +224,7 @@ export default function Home() {
     }
 
     // Create the message hash (SHA-256)
-    const messageHash = new Uint8Array(await crypto.subtle.digest('SHA-256', message));
+    const messageHash = new Uint8Array(await crypto.subtle.digest('SHA-256', message.buffer as ArrayBuffer));
 
     // Request signature from the authenticator
     const assertionOptions: CredentialRequestOptions = {
@@ -289,18 +289,19 @@ export default function Home() {
     return compact;
   }
 
-  function padTo32Bytes(arr: Uint8Array): Uint8Array {
+  function padTo32Bytes(arr: Uint8Array): Uint8Array<ArrayBuffer> {
     // Remove leading zero if present (DER adds it for negative numbers)
-    if (arr.length === 33 && arr[0] === 0) {
-      arr = arr.slice(1);
+    let result = arr;
+    if (result.length === 33 && result[0] === 0) {
+      result = result.slice(1);
     }
     // Pad to 32 bytes
-    if (arr.length < 32) {
+    if (result.length < 32) {
       const padded = new Uint8Array(32);
-      padded.set(arr, 32 - arr.length);
-      return padded;
+      padded.set(result, 32 - result.length);
+      return padded as Uint8Array<ArrayBuffer>;
     }
-    return arr.slice(0, 32);
+    return result.slice(0, 32) as Uint8Array<ArrayBuffer>;
   }
 
   // Mint NFT with passkey signature
