@@ -88,6 +88,31 @@ The contract is **live on Stacks Mainnet**:
 - **Contract**: `SP2FY55DK4NESNH6E5CJSNZP2CQ5PZ5BX64B29FYG.passkey-nft-v3`
 - **TX ID**: `89a90f99cec86be93d718779884da95192ba21437dbf95f21b9e312dacefd718`
 - **Explorer**: [View on Stacks Explorer](https://explorer.hiro.so/txid/89a90f99cec86be93d718779884da95192ba21437dbf95f21b9e312dacefd718?chain=mainnet)
+- **Live App**: [https://passkey-nft-vault.vercel.app/](https://passkey-nft-vault.vercel.app/)
+
+## 📡 Chainhooks Monitoring
+
+This project uses [Hiro Chainhooks](https://platform.hiro.so/chainhooks) for real-time blockchain event monitoring. Three active Chainhooks track all contract activity on Stacks Mainnet:
+
+### Active Chainhooks
+
+| Chainhook | Version | Purpose | Status |
+|-----------|---------|---------|--------|
+| **Passkey Registrations** | v1.0 | Monitors new passkey registrations | ✅ Active |
+| **Passkey NFT Mints** | v1.0 | Tracks NFT minting events | ✅ Active |
+| **Passkey NFT Transfers** | v1.0 | Monitors NFT transfer activities | ✅ Active |
+
+All Chainhooks are monitoring from block **5294584** on **Mainnet**.
+
+### Webhook Integration
+
+The application includes a secure webhook endpoint at `/api/webhooks/chainhook` that:
+- Receives real-time events from Hiro Platform
+- Validates webhook signatures for security
+- Processes contract events (registrations, mints, transfers)
+- Can be integrated with Discord for notifications (optional)
+
+**Learn more**: [Hiro Chainhooks Platform](https://platform.hiro.so/chainhooks)
 
 ### Deploy to Testnet
 
@@ -211,10 +236,16 @@ passkey-nft-vault/
 │   ├── page.tsx               # Main UI with WebAuthn
 │   ├── layout.tsx             # Next.js layout
 │   ├── globals.css            # Tailwind styles
-│   └── api/metadata/[tokenId]/
-│       └── route.ts           # NFT metadata API
+│   └── api/
+│       ├── metadata/[tokenId]/
+│       │   └── route.ts       # NFT metadata API
+│       └── webhooks/chainhook/
+│           └── route.ts       # Chainhook webhook endpoint
+├── chainhooks/
+│   └── lib/                   # Chainhook utility library
 ├── deployments/
-│   └── default.mainnet-plan.yaml  # Mainnet deployment config
+│   ├── default.mainnet-plan.yaml  # Mainnet deployment config
+│   └── *.chainhook.yaml       # Chainhook specifications
 ├── Clarinet.toml              # Clarinet configuration
 ├── settings/
 │   ├── Devnet.toml            # Local development
