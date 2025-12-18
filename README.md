@@ -51,6 +51,23 @@ Passkey NFT Vault is a **SIP-009 compliant NFT contract** that leverages **Clari
 └──────────────────────────────────────────────────────────────┘
 ```
 
+## 📱 Mobile Wallet Support
+
+This application fully supports mobile devices with the **Leather mobile wallet**:
+
+### Using on Mobile
+1. **Install Leather Wallet**: Download from [App Store](https://apps.apple.com/app/leather-bitcoin-wallet/id6476002250) or [Google Play](https://play.google.com/store/apps/details?id=io.leather.wallet)
+2. **Create/Import Wallet**: Set up your Stacks wallet in the Leather app
+3. **Visit the App**: Open [passkey-nft-vault.vercel.app](https://passkey-nft-vault.vercel.app/) in your mobile browser
+4. **Connect**: Tap "Connect Stacks Wallet" - this will automatically open the Leather app
+5. **Approve**: Approve the connection in Leather
+6. **Return**: You'll be redirected back to the app, now connected!
+
+### Mobile vs Desktop
+- **Desktop**: Uses browser extension popup modal
+- **Mobile**: Uses deep linking to open Leather app and redirect back
+- **Both**: Full support for Face ID/Touch ID passkey authentication
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -58,6 +75,7 @@ Passkey NFT Vault is a **SIP-009 compliant NFT contract** that leverages **Clari
 - [Clarinet](https://github.com/hirosystems/clarinet) >= 2.0
 - [Node.js](https://nodejs.org) >= 18
 - A WebAuthn-compatible device (Face ID, Touch ID, or security key)
+- [Leather Wallet](https://leather.io) (Browser extension for desktop or mobile app for iOS/Android)
 
 ### Installation
 
