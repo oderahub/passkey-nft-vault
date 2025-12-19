@@ -54,6 +54,20 @@ export default function Home() {
       setIsConnected(true);
       setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
     }
+
+    // Handle pending authentication (important for mobile wallet redirects)
+    if (userSession.isSignInPending()) {
+      userSession.handlePendingSignIn().then((userData) => {
+        setIsConnected(true);
+        setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
+        setStatus('idle');
+        setStatusMessage('Wallet connected successfully!');
+      }).catch((error) => {
+        console.error('Authentication error:', error);
+        setStatus('error');
+        setStatusMessage('Failed to connect wallet');
+      });
+    }
   }, []);
 
   // Connect wallet
@@ -64,15 +78,19 @@ export default function Home() {
     showConnect({
       appDetails: {
         name: 'Passkey NFT Vault',
-        icon: 'https://stacks.co/images/stacks-logo.svg',
+        icon: typeof window !== 'undefined' ? `${window.location.origin}/icon.png` : 'https://stacks.co/images/stacks-logo.svg',
       },
       redirectTo: '/',
       onFinish: () => {
-        const userData = userSession.loadUserData();
-        setIsConnected(true);
-        setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
-        setStatus('idle');
-        setStatusMessage('');
+        // This callback might not fire on mobile due to redirect
+        // The useEffect with handlePendingSignIn handles mobile returns
+        if (userSession.isUserSignedIn()) {
+          const userData = userSession.loadUserData();
+          setIsConnected(true);
+          setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
+          setStatus('idle');
+          setStatusMessage('Wallet connected!');
+        }
       },
       onCancel: () => {
         setStatus('idle');
