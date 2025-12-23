@@ -16,7 +16,7 @@
     "deploy:mainnet": "clarinet deployments apply -p mainnet"
   },
   "dependencies": {
-    "@stacks/connect": "^7.8.0",
+    "@stacks/connect": "^8.2.4",
     "@stacks/network": "^6.13.0",
     "@stacks/transactions": "^6.13.0",
     "next": "^14.0.0",
