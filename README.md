@@ -68,6 +68,35 @@ This application fully supports mobile devices with the **Leather mobile wallet*
 - **Mobile**: Uses deep linking to open Leather app and redirect back
 - **Both**: Full support for Face ID/Touch ID passkey authentication
 
+## 🔗 WalletConnect Integration
+
+This application now supports **WalletConnect**, enabling broader wallet compatibility across the Stacks ecosystem!
+
+### What is WalletConnect?
+
+WalletConnect is a web3 standard that creates secure encrypted connections between dApps and wallets via a relay server. This integration, [announced by Stacks in November 2025](https://phemex.com/news/article/stacks-integrates-walletconnect-to-enhance-wallet-compatibility-37327), allows any WalletConnect-enabled wallet to connect without implementing full Stacks Connect discovery logic.
+
+### Supported Wallets
+
+✅ **Native Support:**
+- Leather Wallet (Desktop & Mobile)
+- Xverse Wallet (iOS & Android with WalletConnect)
+- Asigna
+
+✅ **WalletConnect Support:**
+- Any wallet with WalletConnect integration
+- Easier onboarding for new wallets
+- Cross-platform compatibility
+
+### How It Works
+
+When you click "Connect Stacks Wallet," you'll see options for both native wallets and WalletConnect-enabled wallets. Simply:
+1. Choose your preferred connection method
+2. Scan QR code (for mobile wallets) or approve in browser extension
+3. Start minting NFTs with your passkey!
+
+**Project ID:** Configured via `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` environment variable.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -75,7 +104,10 @@ This application fully supports mobile devices with the **Leather mobile wallet*
 - [Clarinet](https://github.com/hirosystems/clarinet) >= 2.0
 - [Node.js](https://nodejs.org) >= 18
 - A WebAuthn-compatible device (Face ID, Touch ID, or security key)
-- [Leather Wallet](https://leather.io) (Browser extension for desktop or mobile app for iOS/Android)
+- A Stacks wallet:
+  - [Leather Wallet](https://leather.io) (Browser extension for desktop or mobile app)
+  - [Xverse Wallet](https://www.xverse.app/) (Mobile app with WalletConnect support)
+  - Any WalletConnect-enabled wallet
 
 ### Installation
 
@@ -91,6 +123,7 @@ npm install
 cp .env.example .env.local
 # Update NEXT_PUBLIC_NETWORK (mainnet/testnet)
 # Update NEXT_PUBLIC_CONTRACT_ADDRESS with your deployed contract
+# Update NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID with your WalletConnect project ID from https://cloud.reown.com
 
 # Run tests
 npm test
@@ -285,6 +318,7 @@ Each NFT includes:
 - [x] Week 1: Core contract + passkey minting ✅
 - [x] Mainnet deployment ✅
 - [x] Vitest testing infrastructure ✅
+- [x] WalletConnect integration ✅
 - [ ] Week 2: Multi-sig passkey support
 - [ ] Week 3: Time-locked minting with `stacks-block-time`
 - [ ] NFT marketplace integration

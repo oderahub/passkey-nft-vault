@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { AppConfig, showConnect, UserSession } from '@stacks/connect';
-import { 
+import { AppConfig, UserSession, connect as stacksConnect } from '@stacks/connect';
+import {
   openContractCall,
-  FinishedTxData 
+  FinishedTxData
 } from '@stacks/connect';
 import {
   bufferCV,
@@ -71,33 +71,32 @@ export default function Home() {
   }, []);
 
   // Connect wallet
-  const connectWallet = useCallback(() => {
+  const connectWallet = useCallback(async () => {
     setStatus('connecting');
     setStatusMessage('Connecting wallet...');
 
-    showConnect({
-      appDetails: {
-        name: 'Passkey NFT Vault',
-        icon: typeof window !== 'undefined' ? `${window.location.origin}/icon.png` : 'https://stacks.co/images/stacks-logo.svg',
-      },
-      redirectTo: '/',
-      onFinish: () => {
-        // This callback might not fire on mobile due to redirect
-        // The useEffect with handlePendingSignIn handles mobile returns
-        if (userSession.isUserSignedIn()) {
-          const userData = userSession.loadUserData();
-          setIsConnected(true);
-          setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
-          setStatus('idle');
-          setStatusMessage('Wallet connected!');
-        }
-      },
-      onCancel: () => {
+    try {
+      const result = await stacksConnect({
+        walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+      });
+
+      // After connection, the userSession will be updated
+      if (userSession.isUserSignedIn()) {
+        const userData = userSession.loadUserData();
+        setIsConnected(true);
+        setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
+        setStatus('idle');
+        setStatusMessage('Wallet connected!');
+      }
+    } catch (error: any) {
+      if (error?.message?.includes('cancel') || error?.message?.includes('reject')) {
         setStatus('idle');
         setStatusMessage('Connection cancelled');
-      },
-      userSession,
-    });
+      } else {
+        setStatus('error');
+        setStatusMessage(`Connection failed: ${error.message || 'Unknown error'}`);
+      }
+    }
   }, []);
 
   // Disconnect wallet
@@ -412,16 +411,25 @@ export default function Home() {
 
           {/* Connection status */}
           {!isConnected ? (
-            <button
-              onClick={connectWallet}
-              disabled={status === 'connecting'}
-              className="w-full py-4 px-6 rounded-2xl font-semibold text-lg
-                bg-gradient-to-r from-stacks to-purple-600 hover:from-stacks/90 hover:to-purple-500
-                transition-all duration-300 transform hover:scale-[1.02]
-                disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {status === 'connecting' ? 'Connecting...' : 'Connect Stacks Wallet'}
-            </button>
+            <div className="space-y-3">
+              <button
+                onClick={connectWallet}
+                disabled={status === 'connecting'}
+                className="w-full py-4 px-6 rounded-2xl font-semibold text-lg
+                  bg-gradient-to-r from-stacks to-purple-600 hover:from-stacks/90 hover:to-purple-500
+                  transition-all duration-300 transform hover:scale-[1.02]
+                  disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {status === 'connecting' ? 'Connecting...' : 'Connect Stacks Wallet'}
+              </button>
+
+              {/* WalletConnect support badge */}
+              <div className="text-center">
+                <p className="text-xs text-gray-400">
+                  Supports: Leather, Xverse, Asigna + <span className="text-stacks font-semibold">WalletConnect</span>
+                </p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-4">
               {/* Connected address */}
