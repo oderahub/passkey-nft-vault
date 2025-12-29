@@ -14,6 +14,7 @@ import {
   PostConditionMode,
 } from '@stacks/transactions';
 import { StacksTestnet, StacksMainnet } from '@stacks/network';
+import { WalletModal } from './components/WalletModal/WalletModal';
 
 // Contract configuration - set via environment variables
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
@@ -46,6 +47,7 @@ export default function Home() {
   const [txId, setTxId] = useState<string>('');
   const [passkey, setPasskey] = useState<PasskeyCredential | null>(null);
   const [isPasskeyRegistered, setIsPasskeyRegistered] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   // Check if user is already connected
   useEffect(() => {
@@ -71,7 +73,7 @@ export default function Home() {
   }, []);
 
   // Connect wallet
-  const connectWallet = useCallback(async () => {
+  const connectWallet = useCallback(async (walletId?: string) => {
     setStatus('connecting');
     setStatusMessage('Connecting wallet...');
 
@@ -87,6 +89,7 @@ export default function Home() {
         setUserAddress(isMainnet ? userData.profile.stxAddress.mainnet : userData.profile.stxAddress.testnet);
         setStatus('idle');
         setStatusMessage('Wallet connected!');
+        setShowWalletModal(false); // Close modal on successful connection
       }
     } catch (error: any) {
       if (error?.message?.includes('cancel') || error?.message?.includes('reject')) {
@@ -413,20 +416,20 @@ export default function Home() {
           {!isConnected ? (
             <div className="space-y-3">
               <button
-                onClick={connectWallet}
+                onClick={() => setShowWalletModal(true)}
                 disabled={status === 'connecting'}
                 className="w-full py-4 px-6 rounded-2xl font-semibold text-lg
                   bg-gradient-to-r from-stacks to-purple-600 hover:from-stacks/90 hover:to-purple-500
                   transition-all duration-300 transform hover:scale-[1.02]
                   disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {status === 'connecting' ? 'Connecting...' : 'Connect Stacks Wallet'}
+                {status === 'connecting' ? 'Connecting...' : 'Connect Wallet'}
               </button>
 
-              {/* WalletConnect support badge */}
+              {/* Wallet support badge */}
               <div className="text-center">
                 <p className="text-xs text-gray-400">
-                  Supports: Leather, Xverse, Asigna + <span className="text-stacks font-semibold">WalletConnect</span>
+                  Supports: Leather, Xverse, OKX, Hiro, Asigna + WalletConnect
                 </p>
               </div>
             </div>
@@ -544,6 +547,13 @@ export default function Home() {
           Built for Stacks Builder Challenge Week 1
         </p>
       </div>
+
+      {/* Wallet Modal */}
+      <WalletModal
+        isOpen={showWalletModal}
+        onClose={() => setShowWalletModal(false)}
+        onConnect={connectWallet}
+      />
     </main>
   );
 }
