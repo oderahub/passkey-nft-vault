@@ -46,6 +46,7 @@ export function useWalletDetection(): UseWalletDetectionReturn {
           return providers.some((provider) => {
             // Handle both exact matches and nested provider IDs
             // e.g., 'LeatherProvider' or 'XverseProviders.StacksProvider'
+            if (!wallet.providerId) return false;
             return provider.id === wallet.providerId ||
                    provider.id.includes(wallet.providerId) ||
                    wallet.providerId.includes(provider.id);
