@@ -4,14 +4,11 @@
  */
 
 import { WalletConfig } from '../types/wallet';
-
-/**
- * Temporary placeholder for wallet icons until icon components are created
- * Will be replaced with actual icon components in Branch 3
- */
-const PlaceholderIcon = ({ className }: { className?: string }) => (
-  <div className={className} style={{ width: '2rem', height: '2rem', backgroundColor: '#ccc', borderRadius: '50%' }} />
-);
+import { LeatherIcon } from '../components/icons/LeatherIcon';
+import { XverseIcon } from '../components/icons/XverseIcon';
+import { OKXIcon } from '../components/icons/OKXIcon';
+import { HiroIcon } from '../components/icons/HiroIcon';
+import { AsignaIcon } from '../components/icons/AsignaIcon';
 
 /**
  * Registry of all supported Stacks wallets
@@ -22,7 +19,7 @@ export const SUPPORTED_WALLETS: WalletConfig[] = [
     id: 'leather',
     name: 'Leather',
     description: 'Bitcoin & Stacks wallet with Face ID support',
-    icon: PlaceholderIcon, // Will be replaced with LeatherIcon
+    icon: LeatherIcon,
     providerId: 'LeatherProvider',
     platforms: ['desktop', 'ios', 'android'],
     installUrls: {
@@ -39,7 +36,7 @@ export const SUPPORTED_WALLETS: WalletConfig[] = [
     id: 'xverse',
     name: 'Xverse',
     description: 'Multi-chain wallet for Bitcoin, Stacks & more',
-    icon: PlaceholderIcon, // Will be replaced with XverseIcon
+    icon: XverseIcon,
     providerId: 'XverseProviders.StacksProvider',
     platforms: ['desktop', 'ios', 'android'],
     installUrls: {
@@ -54,7 +51,7 @@ export const SUPPORTED_WALLETS: WalletConfig[] = [
     id: 'okx',
     name: 'OKX Wallet',
     description: 'Multi-chain Web3 wallet with Stacks support',
-    icon: PlaceholderIcon, // Will be replaced with OKXIcon
+    icon: OKXIcon,
     providerId: 'OKXProvider', // To be verified
     platforms: ['desktop', 'ios', 'android'],
     installUrls: {
@@ -71,7 +68,7 @@ export const SUPPORTED_WALLETS: WalletConfig[] = [
     id: 'hiro',
     name: 'Hiro Wallet',
     description: 'Legacy Stacks wallet (now Leather)',
-    icon: PlaceholderIcon, // Will be replaced with HiroIcon
+    icon: HiroIcon,
     providerId: 'HiroProvider',
     platforms: ['desktop'],
     installUrls: {
@@ -84,7 +81,7 @@ export const SUPPORTED_WALLETS: WalletConfig[] = [
     id: 'asigna',
     name: 'Asigna',
     description: 'Multisig wallet for Stacks',
-    icon: PlaceholderIcon, // Will be replaced with AsignaIcon
+    icon: AsignaIcon,
     providerId: 'AsignaProvider', // To be verified
     platforms: ['desktop'],
     installUrls: {
