@@ -79,21 +79,25 @@ WalletConnect is a web3 standard that creates secure encrypted connections betwe
 ### Supported Wallets
 
 ✅ **Native Support:**
-- Leather Wallet (Desktop & Mobile)
-- Xverse Wallet (iOS & Android with WalletConnect)
-- Asigna
+- **Leather Wallet** (Desktop & Mobile) - Bitcoin & Stacks with Face ID
+- **Xverse Wallet** (Desktop, iOS & Android) - Multi-chain with WalletConnect
+- **OKX Wallet** (Desktop, iOS & Android) - Multi-chain Web3 wallet
+- **Hiro Wallet** (Desktop) - Legacy Stacks wallet
+- **Asigna** (Desktop) - Multisig wallet for Stacks
 
 ✅ **WalletConnect Support:**
-- Any wallet with WalletConnect integration
+- Any WalletConnect-enabled wallet
 - Easier onboarding for new wallets
 - Cross-platform compatibility
 
 ### How It Works
 
-When you click "Connect Stacks Wallet," you'll see options for both native wallets and WalletConnect-enabled wallets. Simply:
-1. Choose your preferred connection method
-2. Scan QR code (for mobile wallets) or approve in browser extension
-3. Start minting NFTs with your passkey!
+When you click "Connect Wallet," a beautiful wallet selection modal appears showing:
+1. **Installed Wallets**: Automatically detected wallets (Leather, Xverse, OKX, Hiro)
+2. **Popular Wallets**: Featured wallets with easy install links
+3. **WalletConnect**: QR code for mobile wallets
+
+Simply select your wallet and approve the connection to start minting NFTs with passkeys!
 
 **Project ID:** Configured via `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` environment variable.
 
@@ -105,9 +109,11 @@ When you click "Connect Stacks Wallet," you'll see options for both native walle
 - [Node.js](https://nodejs.org) >= 18
 - A WebAuthn-compatible device (Face ID, Touch ID, or security key)
 - A Stacks wallet:
-  - [Leather Wallet](https://leather.io) (Browser extension for desktop or mobile app)
-  - [Xverse Wallet](https://www.xverse.app/) (Mobile app with WalletConnect support)
-  - Any WalletConnect-enabled wallet
+  - [Leather Wallet](https://leather.io) - Desktop & Mobile
+  - [Xverse Wallet](https://www.xverse.app/) - Desktop & Mobile
+  - [OKX Wallet](https://www.okx.com/web3) - Multi-chain support
+  - [Hiro Wallet](https://wallet.hiro.so/) - Legacy Stacks wallet
+  - Or any WalletConnect-enabled wallet
 
 ### Installation
 
